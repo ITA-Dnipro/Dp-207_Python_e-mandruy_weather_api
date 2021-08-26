@@ -2,9 +2,11 @@ from flask import Flask, request, jsonify, render_template
 from geopy.geocoders import Nominatim
 import datetime
 import requests
-import configparser
+import os
 from flask import Flask, request, jsonify
 
+API_KEY = os.environ.get('API_KEY')
+PORT = os.environ.get('PORT')
 
 app = Flask(__name__)
 
@@ -12,10 +14,9 @@ app = Flask(__name__)
 @app.route("/appi/get_weather_by_city", methods=["POST"])
 def get_weather_by_city():
     city_name = request.get_json()["city_name"]
-    api_key = get_api_key()
     lat = get_geo_location(city_name)[0]
     lon = get_geo_location(city_name)[1]
-    data = get_weather_results(lat, lon, api_key)
+    data = get_weather_results(lat, lon, API_KEY)
     forecast = {}
     d = []
 
@@ -79,12 +80,6 @@ def get_geo_location(city):
     return location.latitude, location.longitude
 
 
-def get_api_key():
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-    return config["openweathermap"]["api"]
-
-
 def get_weather_results(lat, lon, api_key):
     api_url = "https://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units=metric&exclude=minutely,hourly&appid={}".format(lat, lon, api_key)
     print(api_url)
@@ -98,4 +93,4 @@ def weather_dashboard():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5002, host="0.0.0.0")
+    app.run(debug=True, port=PORT, host="0.0.0.0")
