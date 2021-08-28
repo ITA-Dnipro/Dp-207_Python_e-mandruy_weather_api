@@ -4,6 +4,9 @@ import datetime
 import requests
 import os
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
+
+load_dotenv()
 
 API_KEY = os.environ.get('API_KEY')
 PORT = os.environ.get('PORT')
